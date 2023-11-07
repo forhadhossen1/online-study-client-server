@@ -43,6 +43,11 @@ async function run() {
 
         // create Assignment .. 
 
+        app.get('/assignment', async (req, res) =>{
+            const result = await assignmentCollection.find().toArray();
+            res.send(result);
+        })
+
         app.get('/assignments', async(req, res)=>{
             let query = {};
             if(req.query?.email) {
@@ -54,9 +59,9 @@ async function run() {
         })
 
         app.post('/assignments', async(req, res) => {
-            const assignment = req.body;
-            console.log(assignment);
-            const result = await assignmentCollection.insertOne(assignment);
+            const assignmente = req.body;
+            console.log(assignmente);
+            const result = await assignmentCollection.insertOne(assignmente);
             res.send(result);
         })
 
