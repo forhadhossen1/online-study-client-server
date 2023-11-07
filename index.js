@@ -42,6 +42,17 @@ async function run() {
         })
 
         // create Assignment .. 
+
+        app.get('/assignments', async(req, res)=>{
+            let query = {};
+            if(req.query?.email) {
+                query = {email : req.query.email}
+            }
+            const cursor = assignmentCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         app.post('/assignments', async(req, res) => {
             const assignment = req.body;
             console.log(assignment);
