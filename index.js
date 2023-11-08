@@ -10,7 +10,9 @@ const port = process.env.PORT || 5000;
 // middleware 
 app.use(cors({
     origin: [
-        'http://localhost:5173'
+        'http://localhost:5173',
+        'https://online-study-83f14.web.app',
+        'https://online-study-83f14.firebaseapp.com'
     ],
     credentials: true
 }));
@@ -56,7 +58,7 @@ const verifyToken = (req, res, next) => {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
 
         const featuresCollection = client.db('onlineStudy').collection('features');
