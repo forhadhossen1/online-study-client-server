@@ -43,22 +43,51 @@ async function run() {
 
         // create Assignment .. 
 
-        app.get('/assignment', async (req, res) =>{
+        app.get('/assignment', async (req, res) => {
             const result = await assignmentCollection.find().toArray();
             res.send(result);
         })
 
-        app.get('/assignments', async(req, res)=>{
+        // update assignment
+        app.get('/assignment/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await assignmentCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.put('/assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updateAssignment = req.body;
+            const update = {
+                $set: {
+                    title: updateAssignment.title,
+                    category: updateAssignment.category,
+                    photo: updateAssignment.photo,
+                    mark: updateAssignment.mark,
+                    description: updateAssignment.description,
+                    date: updateAssignment.date,
+                    thumbnail: updateAssignment.thumbnail
+                }
+            }
+
+            const result = await assignmentCollection.updateOne(filter, update, options)
+            res.send(result)
+        })
+
+        app.get('/assignments', async (req, res) => {
             let query = {};
-            if(req.query?.email) {
-                query = {email : req.query.email}
+            if (req.query?.email) {
+                query = { email: req.query.email }
             }
             const cursor = assignmentCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.post('/assignments', async(req, res) => {
+        app.post('/assignments', async (req, res) => {
             const assignmente = req.body;
             console.log(assignmente);
             const result = await assignmentCollection.insertOne(assignmente);
