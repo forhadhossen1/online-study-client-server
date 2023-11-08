@@ -47,8 +47,8 @@ const verifyToken = (req, res, next) => {
         return res.status(401).send({ message: 'unauthorized access' });
     }
     jwt.verify(token, process.env.TOKEN_SCRET, (err, decoded) => {
-        if(err){
-            return res.status(401).send({message: 'unauthorized access'})
+        if (err) {
+            return res.status(401).send({ message: 'unauthorized access' })
         }
         req.user = decoded;
         next()
@@ -71,7 +71,7 @@ async function run() {
             console.log('user for token', user)
             const token = jwt.sign(user, process.env.TOKEN_SCRET, { expiresIn: '1h' })
             res.cookie('token', token, {
-                httpOnly: true,
+                httpOnly: false,
                 secure: true,
                 sameSite: 'none'
             })
@@ -81,8 +81,13 @@ async function run() {
         app.post('/logout', async (req, res) => {
             const user = req.body;
             console.log('loging Out', user)
-            res.clearCookie('token', { maxAge: 0 }).send({ success: true })
+            res.clearCookie('token', {
+                maxAge: 0,
+                sameSite: "none",
+                secure: true
+            }).send({ success: true });
         })
+
 
 
         // features related api
@@ -129,8 +134,8 @@ async function run() {
         })
 
         app.get('/assignments', logger, verifyToken, async (req, res) => {
-            if(req.user.email !== req.query.email){
-                return res.status(403).send({massage : 'forbidden access'})
+            if (req.user.email !== req.query.email) {
+                return res.status(403).send({ massage: 'forbidden access' })
             }
             let query = {};
             if (req.query?.email) {
