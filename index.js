@@ -63,6 +63,7 @@ async function run() {
 
         const featuresCollection = client.db('onlineStudy').collection('features');
         const assignmentCollection = client.db('onlineStudy').collection('assignments');
+        const submitionCollection = client.db('onlineStudy').collection('submits');
 
 
         // auth related api
@@ -89,6 +90,21 @@ async function run() {
         })
 
 
+        // submited related  
+        app.post('/submits', async (req, res) => {
+            const submit = req.body;
+            console.log(submit);
+            const result = await submitionCollection.insertOne(submit);
+            res.send(result);
+        })
+
+
+        app.get('/submits/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await submitionCollection.findOne(query);
+            res.send(result);
+        })
 
         // features related api
         app.get('/features', async (req, res) => {
