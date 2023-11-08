@@ -1,12 +1,18 @@
 const express = require('express')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000;
 
 // middleware 
-app.use(cors());
+app.use(cors({
+    origin : [
+        'http://localhost:5173'
+    ],
+    credentials : true
+}));
 app.use(express.json());
 
 
@@ -35,13 +41,28 @@ async function run() {
         const assignmentCollection = client.db('onlineStudy').collection('assignments');
 
 
+        // auth related api
+        app.post('/jwt', async(req, res) => {
+            const user = req.body;
+            console.log('user for token', user)
+            const token = jwt.sign(user, process.env.TOKEN_SCRET, {expiresIn: '1h'})
+            res.cookie('token', token, {
+                httpOnly : true,
+                secure : true,
+                sameSite : 'none'
+            })
+            .send({success: true})
+        })
+
+
+        // features related api
         app.get('/features', async (req, res) => {
             const cursor = featuresCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        // create Assignment .. 
+        // create Assignment related .. 
 
         app.get('/assignment', async (req, res) => {
             const result = await assignmentCollection.find().toArray();
